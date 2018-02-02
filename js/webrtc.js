@@ -53,31 +53,34 @@
         // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         // STUN Server List Configuration (public STUN list)
         // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        var rtcconfig = { iceServers : [{ "url" :
-            navigator.mozGetUserMedia    ? "stun:stun.services.mozilla.com" :
-            navigator.webkitGetUserMedia ? "stun:stun.l.google.com:19302"   :
+        var rtcconfig = { 
+            
+            iceServers : [
+                { urls :
+                navigator.mozGetUserMedia    ? "stun:stun.services.mozilla.com" :
+                navigator.webkitGetUserMedia ? "stun:stun.l.google.com:19302"   :
                                            "stun:23.21.150.121"
-        },
-            {url: "stun:stun.l.google.com:19302"},
-            {url: "stun:stun1.l.google.com:19302"},
-            {url: "stun:stun2.l.google.com:19302"},
-            {url: "stun:stun3.l.google.com:19302"},
-            {url: "stun:stun4.l.google.com:19302"},
-            {url: "stun:23.21.150.121"},
-            {url: "stun:stun01.sipphone.com"},
-            {url: "stun:stun.ekiga.net"},
-            {url: "stun:stun.fwdnet.net"},
-            {url: "stun:stun.ideasip.com"},
-            {url: "stun:stun.iptel.org"},
-            {url: "stun:stun.rixtelecom.se"},
-            {url: "stun:stun.schlund.de"},
-            {url: "stun:stunserver.org"},
-            {url: "stun:stun.softjoys.com"},
-            {url: "stun:stun.voiparound.com"},
-            {url: "stun:stun.voipbuster.com"},
-            {url: "stun:stun.voipstunt.com"},
-            {url: "stun:stun.voxgratia.org"},
-            {url: "stun:stun.xten.com"}
+            },
+            {urls: "stun:stun.l.google.com:19302"},
+            {urls: "stun:stun1.l.google.com:19302"},
+            {urls: "stun:stun2.l.google.com:19302"},
+            {urls: "stun:stun3.l.google.com:19302"},
+            {urls: "stun:stun4.l.google.com:19302"},
+            {urls: "stun:23.21.150.121"},
+            {urls: "stun:stun01.sipphone.com"},
+            {urls: "stun:stun.ekiga.net"},
+            {urls: "stun:stun.fwdnet.net"},
+            {urls: "stun:stun.ideasip.com"},
+            {urls: "stun:stun.iptel.org"},
+            {urls: "stun:stun.rixtelecom.se"},
+            {urls: "stun:stun.schlund.de"},
+            {urls: "stun:stunserver.org"},
+            {urls: "stun:stun.softjoys.com"},
+            {urls: "stun:stun.voiparound.com"},
+            {urls: "stun:stun.voipbuster.com"},
+            {urls: "stun:stun.voipstunt.com"},
+            {urls: "stun:stun.voxgratia.org"},
+            {urls: "stun:stun.xten.com"}
         ] };
     
         // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -322,37 +325,31 @@
         // Grab Local Video Snapshot
         // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
         function snapshots_setup(stream) {
-            try {
-                var video   = myvideo;
-                var canvas  = document.createElement('canvas');
-                var context = canvas.getContext("2d");
-                var snap    = { width: 240, height: 180 };
-        
-                // Video Settings
-                video.width  = snap.width;
-                video.height = snap.height;
-                video.src    = URL.createObjectURL(stream)
-                video.volume = 0.0;
-                video.play();
-        
-                // Canvas Settings
-                canvas.width  = snap.width;
-                canvas.height = snap.height;
-        
-                // Capture Local Pic
-                snapper = function() {
-                    try {
-                        context.drawImage( video, 0, 0, snap.width, snap.height );
-                    } catch(e) {}
-                    return canvas.toDataURL( 'image/jpeg', 0.30 );
-                };
-        
-                PHONE.video = video;
-            }catch(e){
-                console.log(e);
-                
-            }
+            var video   = myvideo;
+            var canvas  = document.createElement('canvas');
+            var context = canvas.getContext("2d");
+            var snap    = { width: 240, height: 180 };
     
+            // Video Settings
+            video.width  = snap.width;
+            video.height = snap.height;
+            video.srcObject    = stream;
+            video.volume = 0.0;
+            video.play();
+    
+            // Canvas Settings
+            canvas.width  = snap.width;
+            canvas.height = snap.height;
+    
+            // Capture Local Pic
+            snapper = function() {
+                try {
+                    context.drawImage( video, 0, 0, snap.width, snap.height );
+                } catch(e) {}
+                return canvas.toDataURL( 'image/jpeg', 0.30 );
+            };
+    
+            PHONE.video = video;
         }
     
         // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -365,7 +362,7 @@
             var talk   = get_conversation(number);
     
             vid.setAttribute( 'autoplay', 'autoplay' );
-            vid.src = URL.createObjectURL(stream);
+            vid.srcObject = stream;
     
             talk.video = vid;
             talk.connect(talk);
@@ -411,7 +408,7 @@
             navigator.getUserMedia( mediaconf, function(stream) {
                 if (!stream) return unablecb(stream);
                 mystream = stream;
-                snapshots_setup(stream)
+                snapshots_setup(stream);
                 if (autocam) startsubscribe();
             }, function(info) {
                 debugcb(info);
@@ -562,4 +559,3 @@
     
     
     })();
-    
